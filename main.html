@@ -145,7 +145,6 @@
         $('#reset').css("background-color","gray");
         if($("#chi").css("background-color")!="rgb(128, 128, 128)"){
             if(confirm("確定重製國語?")){
-                $('#mathsave').css("background-color","gray");
                 var letters = new Array("7A","6A","5A","4A","3A","2A","A1","A2","B1","B2","C1","C2","D","E","F","G","H","I","J","K","L"); 
                 for (const letter of letters) {
                     const letterRef = doc(db, "subjects", "Chinese", "letters", letter);
