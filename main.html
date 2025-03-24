@@ -1,0 +1,413 @@
+<script src="jquery-1.10.2.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <link rel="stylesheet" type="text/css" href="kumon.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0, shrink-to-fit=no">
+</head>
+
+<body>
+    
+    <div class="main">
+        <div class="suject">
+            <input type="button" value="數學" id="math">
+            <input type="button" value="國語" id="chi">
+            <input type="button" value="英文" id="eng">
+        </div>
+    <span id="spanid">教材</span><select name="" id="no">
+        
+    </select>
+    <br>
+    <span id="spanid">編號1</span><select name="" id="src">
+        <option value="1">1</option>
+        <option value="11">11</option>
+        <option value="21">21</option>
+        <option value="31">31</option>
+        <option value="41">41</option>
+        <option value="51">51</option>
+        <option value="61">61</option>
+        <option value="71">71</option>
+        <option value="81">81</option>
+        <option value="91">91</option>
+        <option value="101">101</option>
+        <option value="111">111</option>
+        <option value="121">121</option>
+        <option value="131">131</option>
+        <option value="141">141</option>
+        <option value="151">151</option>
+        <option value="161">161</option>
+        <option value="171">171</option>
+        <option value="181">181</option>
+        <option value="191">191</option>
+    </select>
+    <br>
+    <span id="spanid">編號2</span><select name="" id="dst">
+        
+    </select>
+    <br>
+    <span id="spanid">數量</span><input type="text" id ="count"oninput="value=value.replace(/[^\d]/g,'')">
+    <br>
+    <div class="comfirm">
+        <button id="reset" >重製</button>
+        <button id="mathsave" >儲存</button>
+        <button id="chisave" >儲存</button>
+        <button id="engsave" >儲存</button>
+    </div>
+  
+  
+</div>
+</body>
+</html>
+<script type="module">
+            
+
+
+    async function setupFirestore() {
+        const letters = ["ZI","ZII","ZIII","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"];
+        for (const letter of letters) {
+            const letterRef = doc(db, "subjects", "English", "letters", letter);
+            let values = {};
+            for (let i = 1; i <= 20; i++) {
+                values[`value${i}`] = 0; // 預設值為 0
+            }
+            await setDoc(letterRef, values);
+        }
+        console.log("Firestore setup complete.");
+    }
+    window.getData = async function getData(){
+
+            const lettersSnapshot = await getDocs(collection(db, "subjects", document.getElementById("subject").value, "letters"));
+            for (const letterDoc of lettersSnapshot.docs) {
+                console.log(`  字母: ${letterDoc.id}`);
+            }
+    }
+    /*document.getElementById("updateBtn").addEventListener("click", async () => {
+        const subject = document.getElementById("subject").value;
+        const letter = document.getElementById("letter").value;
+        const value = document.getElementById("valueNumber").value;
+
+        if (!subject || !letter || !value) {
+            alert("請輸入完整的資料！");
+            return;
+        }
+
+        const letterRef = doc(db, "subjects", subject, "letters", letter);
+
+        await updateDoc(letterRef, {
+            value1: 20
+        });
+        alert(`已更新: ${subject} -> ${letter} -> value1 = ${value}`);
+    });*/
+
+</script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, getDocs,doc,setDoc,updateDoc,increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    
+    // Firebase 配置
+    const firebaseConfig = {
+    apiKey: "AIzaSyD-9F5fGAtNzz0QNLuiUjzbQmefwBpLydM",
+    authDomain: "statistics-921a1.firebaseapp.com",
+    projectId: "statistics-921a1",
+    storageBucket: "statistics-921a1.firebasestorage.app",
+    messagingSenderId: "1083533324715",
+    appId: "1:1083533324715:web:af5df87bd8e80f3c73e2ee",
+    measurementId: "G-YJS45V68TZ"
+    };
+
+    // 初始化 Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    var src=$("#src").val();
+    var dst=$("#dst").val();
+    var no=$("#no").val();
+    var count=$("#count").val();
+    var tupleMNo = Object.freeze({ "6A":2,"5A":3,"4A":4,"3A":5,"2A":6,A:7,B:8,C:9,D:10,E:11,F:12,G:13,H:14,I:15,J:16,K:17,L:18,M:19,N:20,O:21 });
+    var tupleCNo = Object.freeze({ "7A":2,"6A":3,"5A":4,"4A":5,"3A":6,"2A":7,"A1":8,"A2":9,"B1":10,"B2":11,"C1":12,"C2":13,D:14,E:15,F:16,G:17,H:18,I:19,J:20,K:21,L:22 });
+    var tupleENo = Object.freeze({ "Z1":2,"Z2":3,"Z3":4,"5A":5,"4A":6,"3A":7,"2A":8,A:9,B:10,C:11,D:12,E:13,F:14,G:15,H:16,I:17,J:18,K:19,L:20,M:21,N:22,O:23 });
+    var tupleSrc = Object.freeze({ 1:2, 11:3,21:4,31:5,41:6,51:7,61:8,71:9,81:10,91:11,101:12,111:13,121:14,131:15,141:16,151:17,161:18,171:19,181:20,191:21 })
+    var suject=0;
+    var id = new Array(10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200); 
+    var value = new Array(10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200);
+    var select = document.getElementById("dst"); 
+    select.length = 1;
+    select.options[0].selected = true;
+    for(var x = 0;x<id.length;x++){ 
+        var option = document.createElement("option"); 
+        option.setAttribute("value",id[x]);
+        option.appendChild(document.createTextNode(value[x])); 
+        select.appendChild(option);
+    } 
+    document.getElementById("reset").addEventListener("click", async () => {
+        $('#reset').attr("disabled","disabled");
+        $('#reset').css("background-color","gray");
+        if($("#chi").css("background-color")!="rgb(128, 128, 128)"){
+            if(confirm("確定重製國語?")){
+                $('#mathsave').css("background-color","gray");
+                var letters = new Array("7A","6A","5A","4A","3A","2A","A1","A2","B1","B2","C1","C2","D","E","F","G","H","I","J","K","L"); 
+                for (const letter of letters) {
+                    const letterRef = doc(db, "subjects", "Chinese", "letters", letter);
+                    let values = {};
+                    for (let i = 1; i <= 20; i++) {
+                        values[`value${i}`] = 0; // 預設值為 0
+                    }
+                    await setDoc(letterRef, values);
+                }
+            alert("完成");
+            }
+        }
+        else if($("#math").css("background-color")!="rgb(128, 128, 128)"){
+            if(confirm("確定重製數學?")){
+                var letters = new Array("6A","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"); 
+                for (const letter of letters) {
+                    const letterRef = doc(db, "subjects", "Math", "letters", letter);
+                    let values = {};
+                    for (let i = 1; i <= 20; i++) {
+                        values[`value${i}`] = 0; // 預設值為 0
+                    }
+                    await setDoc(letterRef, values);
+                }
+            alert("完成");
+            }
+        }
+        else if($("#eng").css("background-color")!="rgb(128, 128, 128)"){
+            if(confirm("確定重製英文?")){
+                var letters = new Array("Z1","Z2","Z3","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"); 
+                for (const letter of letters) {
+                    const letterRef = doc(db, "subjects", "English", "letters", letter);
+                    let values = {};
+                    for (let i = 1; i <= 20; i++) {
+                        values[`value${i}`] = 0; // 預設值為 0
+                    }
+                    await setDoc(letterRef, values);
+                }
+            alert("完成");
+            }
+        }
+        $('#reset').attr("disabled",false);
+        $('#reset').css("background-color","#7ecdf4");
+    })
+    document.getElementById("mathsave").addEventListener("click", async () => {
+        var src=Number($("#src").val());
+        var dst=Number($("#dst").val());
+        var no=$("#no").val();
+        var count=Number($("#count").val());
+        var dataNum=(dst-src)/10.0;
+        dataNum=parseInt(dataNum)+1;
+        if(!window.navigator.onLine){
+            alert("網路在搞 確認網路再來😎😎😎");
+            return;
+        }
+        if(no==""){
+            alert("請選擇教材");
+            return;
+        }
+        if(dst==""){
+            alert("編號2未輸入");
+            return;
+        }
+        if(count==0){
+            alert("請輸入數量");
+            return;
+        }
+        var value ="value"+(((src-1)/10)+1);
+        if(confirm("請確認\n"+"數學"+"\n"+no+"教材\n"+src+"~"+dst+"\n"+count+"本")){
+            $('#mathsave').attr("disabled","disabled");
+            $('#mathsave').css("background-color","gray");
+            try{
+                const promises = [];
+                const letterRef = doc(db, "subjects", "Math", "letters", no);
+                for(var i=1;i<=dataNum;i++){                    
+                    promises.push(updateDoc(letterRef, { [value]: increment(count) }));
+                    value ="value"+(((src-1)/10)+i+1);
+                }
+                await Promise.all(promises);
+                alert(`已更新`);
+            }catch(error){
+                alert(error);
+            }
+            $('#mathsave').text("儲存");
+            $('#mathsave').attr("disabled",false);
+            $('#mathsave').css("background-color","#7ecdf4");
+        }
+    });
+
+    document.getElementById("chisave").addEventListener("click", async () => {
+        var src=Number($("#src").val());
+        var dst=Number($("#dst").val());
+        var no=$("#no").val();
+        var count=Number($("#count").val());
+        var dataNum=(dst-src)/10.0;
+        dataNum=parseInt(dataNum)+1;
+        if(!window.navigator.onLine){
+            alert("網路在搞 確認網路再來😎😎😎");
+            return;
+        }
+        if(no==""){
+            alert("請選擇教材");
+            return;
+        }
+        if(dst==""){
+            alert("編號2未輸入");
+            return;
+        }
+        if(count==0){
+            alert("請輸入數量");
+            return;
+        }
+        var value ="value"+(((src-1)/10)+1);
+        if(confirm("請確認\n"+"國語"+"\n"+no+"教材\n"+src+"~"+dst+"\n"+count+"本")){
+            $('#chisave').attr("disabled","disabled");
+            $('#chisave').css("background-color","gray");
+            try{
+                const promises = [];
+                const letterRef = doc(db, "subjects", "Chinese", "letters", no);
+                for(var i=1;i<=dataNum;i++){                    
+                    promises.push(updateDoc(letterRef, { [value]: increment(count) }));
+                    value ="value"+(((src-1)/10)+i+1);
+                }
+                await Promise.all(promises);
+                alert(`已更新`);
+            }catch(error){
+                alert(error);
+            }
+            $('#chisave').text("儲存");
+            $('#chisave').attr("disabled",false);
+            $('#chisave').css("background-color","#7ecdf4");
+        }
+    });
+    document.getElementById("engsave").addEventListener("click", async () => {
+        var src=Number($("#src").val());
+        var dst=Number($("#dst").val());
+        var no=$("#no").val();
+        var count=Number($("#count").val());
+        var dataNum=(dst-src)/10.0;
+        dataNum=parseInt(dataNum)+1;
+        if(!window.navigator.onLine){
+            alert("網路在搞 確認網路再來😎😎😎");
+            return;
+        }
+        if(no==""){
+            alert("請選擇教材");
+            return;
+        }
+        if(dst==""){
+            alert("編號2未輸入");
+            return;
+        }
+        if(count==0){
+            alert("請輸入數量");
+            return;
+        }
+        var value ="value"+(((src-1)/10)+1);
+        if(confirm("請確認\n"+"英文"+"\n"+no+"教材\n"+src+"~"+dst+"\n"+count+"本")){
+            $('#engsave').attr("disabled","disabled");
+            $('#engsave').css("background-color","gray");
+            try{
+                const promises = [];
+                const letterRef = doc(db, "subjects", "English", "letters", no);
+                for(var i=1;i<=dataNum;i++){                    
+                    promises.push(updateDoc(letterRef, { [value]: increment(count) }));
+                    value ="value"+(((src-1)/10)+i+1);
+                }
+                await Promise.all(promises);
+                alert(`已更新`);
+            }catch(error){
+                alert(error);
+            }
+            $('#engsave').text("儲存");
+            $('#engsave').attr("disabled",false);
+            $('#engsave').css("background-color","#7ecdf4");
+        }
+    });
+    
+    $("#src").change(function(){
+        var srcval=Number($("#src").val());
+        var id = new Array(10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200); 
+        var value = new Array(10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200);
+        var select = document.getElementById("dst"); 
+        select.length = 1;
+        select.options[0].selected = true;
+        var key=parseInt(srcval/10.0);
+        for(var x = key;x<id.length;x++){ 
+            var option = document.createElement("option"); 
+            option.setAttribute("value",id[x]);
+            option.appendChild(document.createTextNode(value[x])); 
+            select.appendChild(option);
+        } 
+    })
+    $('#math').on('click', function() {
+        $('#chi').css("background-color","");
+        $('#eng').css("background-color","");
+        $('#math').css("background-color","");
+        $('#chisave').css("display","none");
+        $('#engsave').css("display","none");
+        $('#mathsave').css("display","block");
+        $('#reset').css("display","block");
+        var id = new Array("6A","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"); 
+        var value = new Array("6A","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"); 
+        var select = document.getElementById("no"); 
+        select.length = 1;
+        select.options[0].selected = true;
+        for(var x = 0;x<id.length;x++){ 
+            var option = document.createElement("option"); 
+            option.setAttribute("value",id[x]);
+            option.appendChild(document.createTextNode(value[x])); 
+            select.appendChild(option);
+        } 
+    })
+    $('#chi').on('click', function() {
+        $('#chi').css("background-color","#fbbc04");
+        $('#eng').css("background-color","");
+        $('#math').css("background-color","");
+        $('#chisave').css("display","block");
+        $('#engsave').css("display","none");
+        $('#mathsave').css("display","none");
+        $('#reset').css("display","block");
+        var id = new Array("7A","6A","5A","4A","3A","2A","A1","A2","B1","B2","C1","C2","D","E","F","G","H","I","J","K","L"); 
+        var value = new Array("7A","6A","5A","4A","3A","2A","A1","A2","B1","B2","C1","C2","D","E","F","G","H","I","J","K","L"); 
+        var select = document.getElementById("no"); 
+        select.length = 1;
+        select.options[0].selected = true;
+        for(var x = 0;x<id.length;x++){ 
+            var option = document.createElement("option"); 
+            option.setAttribute("value",id[x]);
+            option.appendChild(document.createTextNode(value[x])); 
+            select.appendChild(option);
+        } 
+    })
+    $('#eng').on('click', function() {
+        $('#chi').css("background-color","");
+        $('#eng').css("background-color","#ea4335");
+        $('#math').css("background-color","");
+        $('#chisave').css("display","none");
+        $('#engsave').css("display","block");
+        $('#mathsave').css("display","none");
+        $('#reset').css("display","block");
+        var id = new Array("Z1","Z2","Z3","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"); 
+        var value = new Array("Z1(運筆教材)","Z2(運筆教材)","Z3(運筆教材)","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"); 
+        var select = document.getElementById("no"); 
+        select.length = 1;
+        select.options[0].selected = true;
+        for(var x = 0;x<id.length;x++){ 
+            var option = document.createElement("option"); 
+            option.setAttribute("value",id[x]);
+            option.appendChild(document.createTextNode(value[x])); 
+            select.appendChild(option);
+        } 
+    })
+    var list=document.querySelectorAll(".suject input");
+    function activeLink(){
+          list.forEach(event=>{
+              event.classList.remove('hovered');    
+          })
+          if(this.classList=="hovered"){
+            this.classList.remove('hovered');
+          }else{
+            this.classList.add('hovered');
+          }
+    }
+    list.forEach((item)=>item.addEventListener('click',activeLink));
+</script>

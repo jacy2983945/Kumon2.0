@@ -1,0 +1,117 @@
+.main
+{
+    padding: 10px;
+    margin-top: calc(50vh - 185px);
+    margin-left: calc(50% - 168px);
+    width: 300px;
+    border: 5px solid #7ecdf4;
+    border-radius: 15px;
+}
+#spanid
+{
+    width: 150px;
+    border: 0px;
+    font-size: 30px;
+    font-weight: 800;
+    color: #7ecdf4;
+    margin-left: 10px;
+}
+#no
+{
+    width: 150px;
+    height: 30px;
+    font-size: 20px;
+    font-weight: 900;
+    font-family: DFKai-sb;
+    margin-left: 50px;
+}
+#src
+{
+    margin-top: 20px;
+    margin-left: 35px;
+    width: 150px;
+    height: 30px;
+    font-size: 20px;
+    font-weight: 900;
+    font-family: DFKai-sb;
+}
+#dst
+{
+    margin-top: 20px;
+    margin-left: 35px;
+    width: 150px;
+    height: 30px;
+    font-size: 20px;
+    font-weight: 900;
+    font-family: DFKai-sb;
+}
+#count
+{
+    margin-top: 20px;
+    margin-left: 50px;
+    width: 150px;
+    height: 30px;
+    font-size: 20px;
+    font-weight: 900;
+    font-family: DFKai-sb;
+}
+#mathsave,#chisave,#engsave
+{
+    margin-top: 20px;
+    width: 290px;
+    border: 0px;
+    font-size: 30px;
+    font-weight: 800;
+    border-radius: 15px;
+    background-color: #7ecdf4;
+    color: white;
+    cursor: pointer;
+    display: none;
+}
+.suject
+{
+    margin-bottom: 20px;
+    align-items: center;
+    text-align: center;
+}
+.suject input
+{
+    background-color: gray;
+    color: white;
+    border: 0px;
+    font-size: 30px;
+    font-weight: 800;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 90px;
+    text-align: center;
+}
+.suject input:hover,.suject input.hovered{
+    background-color: #7ecdf4;
+}
+#msg{
+    color: blue;
+    margin-left: calc(50% - 30px);
+
+}
+.comfirm
+{
+    margin-bottom: 20px;
+    align-items: center;
+    text-align: center;
+    display: flex;
+}
+#reset
+{
+    margin-top: 20px;
+    margin-right: 10px;
+    width: 100px;
+    border: 0px;
+    font-size: 30px;
+    font-weight: 800;
+    border-radius: 15px;
+    background-color: #7ecdf4;
+    color: white;
+    cursor: pointer;
+    display: none;
+}
