@@ -9,56 +9,57 @@
 </head>
 
 <body>
-    
-    <div class="main">
-        <div class="suject">
-            <input type="button" value="數學" id="math">
-            <input type="button" value="國語" id="chi">
-            <input type="button" value="英文" id="eng">
+    <div id="interact">
+        <div class="main">
+            <div class="suject">
+                <input type="button" value="數學" id="math">
+                <input type="button" value="國語" id="chi">
+                <input type="button" value="英文" id="eng">
+            </div>
+        <span id="spanid">教材</span><select name="" id="no"></select>
+        <br>
+            <span id="spanid">編號1</span>
+            <select name="" id="src">
+                <option value="1">1</option>
+                <option value="11">11</option>
+                <option value="21">21</option>
+                <option value="31">31</option>
+                <option value="41">41</option>
+                <option value="51">51</option>
+                <option value="61">61</option>
+                <option value="71">71</option>
+                <option value="81">81</option>
+                <option value="91">91</option>
+                <option value="101">101</option>
+                <option value="111">111</option>
+                <option value="121">121</option>
+                <option value="131">131</option>
+                <option value="141">141</option>
+                <option value="151">151</option>
+                <option value="161">161</option>
+                <option value="171">171</option>
+                <option value="181">181</option>
+                <option value="191">191</option>
+            </select>
+        <br>
+        <span id="spanid">編號2</span><select name="" id="dst"></select>
+        <br>
+            <span id="spanid">數量</span><input type="text" id ="count"oninput="value=value.replace(/[^\d]/g,'')">
+        <br>
+        <div class="comfirm">
+            <button id="reset" >重製</button>
+            <button id="mathsave" >儲存</button>
+            <button id="chisave" >儲存</button>
+            <button id="engsave" >儲存</button>
         </div>
-    <span id="spanid">教材</span><select name="" id="no">
-        
-    </select>
-    <br>
-    <span id="spanid">編號1</span><select name="" id="src">
-        <option value="1">1</option>
-        <option value="11">11</option>
-        <option value="21">21</option>
-        <option value="31">31</option>
-        <option value="41">41</option>
-        <option value="51">51</option>
-        <option value="61">61</option>
-        <option value="71">71</option>
-        <option value="81">81</option>
-        <option value="91">91</option>
-        <option value="101">101</option>
-        <option value="111">111</option>
-        <option value="121">121</option>
-        <option value="131">131</option>
-        <option value="141">141</option>
-        <option value="151">151</option>
-        <option value="161">161</option>
-        <option value="171">171</option>
-        <option value="181">181</option>
-        <option value="191">191</option>
-    </select>
-    <br>
-    <span id="spanid">編號2</span><select name="" id="dst">
-        
-    </select>
-    <br>
-    <span id="spanid">數量</span><input type="text" id ="count"oninput="value=value.replace(/[^\d]/g,'')">
-    <br>
-    <div class="comfirm">
-        <button id="reset" >重製</button>
-        <button id="mathsave" >儲存</button>
-        <button id="chisave" >儲存</button>
-        <button id="engsave" >儲存</button>
     </div>
-  
-  
+    
+    </div>
+    <div id="container">
 </div>
+
 </body>
+<img id="pic"src="loader.png">
 </html>
 <script type="module">
             
@@ -104,7 +105,7 @@
 </script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, getDocs,doc,setDoc,updateDoc,increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs,doc,setDoc,updateDoc,increment,getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     
     // Firebase 配置
     const firebaseConfig = {
@@ -140,11 +141,44 @@
         option.appendChild(document.createTextNode(value[x])); 
         select.appendChild(option);
     } 
+    function messege(mes){
+        let randomInt = Math.floor(Math.random() * (1000 + 1)); 
+                let notification = $("<div class='notifications'id='"+randomInt+"'>"+mes+"</div>");
+                $("#container").append(notification);
+                setTimeout(function(){
+                    $("#"+randomInt).css({
+                    "top":"80%",
+                    "opacity":"80%"
+                });
+                }, 10);
+                
+                setTimeout(function(){
+                    $("#"+randomInt).css({
+                        "top":"120%", // 回到底部
+                        "opacity": "0"      // 變透明
+                    });
+                    setTimeout(() => notification.remove(), 500);
+                }, 3000);
+    }
     document.getElementById("reset").addEventListener("click", async () => {
+        /*const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
+        const docSnap = await getDoc(docRef);
+        var front=docSnap.data().front;
+        var mes="";
+        for(var i=1;i<=5;i++){
+            var motion="motion"+front;
+            console.log(docSnap.data()[motion]);
+            mes+=(docSnap.data()[motion]+"\n");
+            front=(front+1)%5;
+        }
+        alert(mes);*/
         $('#reset').attr("disabled","disabled");
         $('#reset').css("background-color","gray");
         if($("#chi").css("background-color")!="rgb(128, 128, 128)"){
             if(confirm("確定重製國語?")){
+                document.getElementById("interact").classList.add('locked');
+                
+                $("#pic").css("display","block");
                 var letters = new Array("7A","6A","5A","4A","3A","2A","A1","A2","B1","B2","C1","C2","D","E","F","G","H","I","J","K","L"); 
                 for (const letter of letters) {
                     const letterRef = doc(db, "subjects", "Chinese", "letters", letter);
@@ -154,7 +188,18 @@
                     }
                     await setDoc(letterRef, values);
                 }
-            alert("完成");
+                const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
+                const docSnap=await getDoc(docRef);
+                const front=docSnap.data().front;
+                var motion="motion"+front;
+                const now = new Date();
+                const month = now.getMonth()+1;
+                await updateDoc(docRef,{[motion]:"Chinese Reset"+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
+                await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
+                messege("重置完成");
+                
+                $("#pic").css("display","none");
+                document.getElementById("interact").classList.remove('locked');
             }
         }
         else if($("#math").css("background-color")!="rgb(128, 128, 128)"){
@@ -168,7 +213,15 @@
                     }
                     await setDoc(letterRef, values);
                 }
-            alert("完成");
+                const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
+                const docSnap=await getDoc(docRef);
+                const front=docSnap.data().front;
+                var motion="motion"+front;
+                const now = new Date();
+                const month = now.getMonth()+1;
+                await updateDoc(docRef,{[motion]:"Math Reset"+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
+                await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
+                alert("完成");
             }
         }
         else if($("#eng").css("background-color")!="rgb(128, 128, 128)"){
@@ -182,7 +235,15 @@
                     }
                     await setDoc(letterRef, values);
                 }
-            alert("完成");
+                const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
+                const docSnap=await getDoc(docRef);
+                const front=docSnap.data().front;
+                var motion="motion"+front;
+                const now = new Date();
+                const month = now.getMonth()+1;
+                await updateDoc(docRef,{[motion]:"English Reset"+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
+                await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
+                alert("完成");
             }
         }
         $('#reset').attr("disabled",false);
@@ -227,6 +288,14 @@
             }catch(error){
                 alert(error);
             }
+            const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
+            const docSnap=await getDoc(docRef);
+            const front=docSnap.data().front;
+            var motion="motion"+front;
+            const now = new Date();
+            const month = now.getMonth()+1;
+            await updateDoc(docRef,{[motion]:"數學"+no+"教材["+src+"~"+dst+"]x"+count+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
+            await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
             $('#mathsave').text("儲存");
             $('#mathsave').attr("disabled",false);
             $('#mathsave').css("background-color","#7ecdf4");
@@ -258,6 +327,8 @@
         }
         var value ="value"+(((src-1)/10)+1);
         if(confirm("請確認\n"+"國語"+"\n"+no+"教材\n"+src+"~"+dst+"\n"+count+"本")){
+            document.getElementById("interact").classList.add('locked');
+            $("#pic").css("display","block");
             $('#chisave').attr("disabled","disabled");
             $('#chisave').css("background-color","gray");
             try{
@@ -268,13 +339,15 @@
                     value ="value"+(((src-1)/10)+i+1);
                 }
                 await Promise.all(promises);
-                alert(`已更新`);
             }catch(error){
                 alert(error);
             }
             $('#chisave').text("儲存");
             $('#chisave').attr("disabled",false);
             $('#chisave').css("background-color","#7ecdf4");
+            $("#pic").css("display","none");
+            messege("儲存完成")
+            document.getElementById("interact").classList.remove('locked');
         }
     });
     document.getElementById("engsave").addEventListener("click", async () => {
