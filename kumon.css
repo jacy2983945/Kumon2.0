@@ -115,3 +115,55 @@
     cursor: pointer;
     display: none;
 }
+#pic{
+    position: fixed; /* 固定在視窗上，不會跟著滾動 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 讓圖片以自身中心點對齊 */
+    z-index: 9999; /* 確保圖片顯示在最上層 */
+    width: auto; /* 或設定固定大小 */
+    height: auto;
+    animation: rotate 3s linear infinite;
+    display: none;
+}
+@keyframes rotate {
+    from   {
+        transform: translate(-50%,-50%)rotate(0deg);
+    }
+    to{
+        transform: translate(-50%,-50%)rotate(360deg);
+    }
+}
+.notifications{
+    position: fixed; /* 固定在視窗上，不會跟著滾動 */
+    top: 120%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 讓圖片以自身中心點對齊 */
+    z-index: 9999; /* 確保圖片顯示在最上層 */
+    width: 70%; /* 或設定固定大小 */
+    height: 5%;
+    border: 5px solid #7ecdf4;
+    border-radius: 10px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #7ecdf4;
+    opacity: 0.8;
+    transition: top 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    max-width: 300px; /* 最大寬度 200px */
+    font-size: 1.5em; /* 讓字大一點，看起來更清楚 */
+    color: white;
+    font-weight: 800;
+}
+#notifications label{
+    position: static; /* 讓 label 跟隨父元素對齊 */
+    font-size: 1.5em; /* 讓字大一點，看起來更清楚 */
+    color: white;
+    font-weight: 800;
+    opacity: 1;
+}
+.locked {
+    pointer-events: none;
+    opacity: 0.5;
+}
