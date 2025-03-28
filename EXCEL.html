@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase 教材資料</title>
+    <title>教材資料</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="kumon.css" />
+    <script src="jquery-1.10.2.js"></script>
 </head>
 <body>
-    <h1>教材資料</h1>
-    <div id="container">
-        <button onclick="fetchData('Math')">讀取數學資料</button>
-        <button onclick="fetchData('Chinese')">讀取國文資料</button>
-        <button onclick="fetchData('English')">讀取英文資料</button>
-        <button onclick="exportToExcel()">下載 Excel</button>
-        <button onclick="reset()">重製</button>
-        <button onclick="back()">首頁</button>
+    <h1 id="show">教材資料</h1>
+    <div id="interact">
+        <div id="container" >
+            <button onclick="fetchData('Math')">讀取數學資料</button>
+            <button onclick="fetchData('Chinese')">讀取國文資料</button>
+            <button onclick="fetchData('English')">讀取英文資料</button>
+            
+            <button onclick="reset()">重製</button>
+            <button onclick="back()">首頁</button>
+        </div>
+        <table border="1" id="dataTable">
+        </table>
     </div>
-    
-
-    <table border="1" id="dataTable">
-
-    </table>
+    <img id="pic"src="loader.png">
 
     <script type="module">
         var subjectname;
+        let orderedKeys = ["7A", "6A", "5A", "4A", "3A", "2A","A","A1", "A2","B", "B1", "B2","C", "C1", "C2", "D", "E", "F","G","H","I","J","K","L","M","N","O","Z1","Z2","Z3"];
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs,doc,setDoc,updateDoc,increment,getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         // 1. 初始化 Firebase
@@ -42,7 +45,9 @@
         let tableData = {}; // 用於儲存 Firestore 數據
 
         async function fetchData(subject) {
+            $("#pic").css("display","block");
             subjectname=subject;
+            $("#show").html(subject);
             const table = document.getElementById("dataTable");
             table.innerHTML = "<thead><tr><th></th></tr></thead><tbody></tbody>";
             
@@ -58,8 +63,8 @@
             });
 
             renderTable();
+            $("#pic").css("display","none");
         }
-
         function renderTable() {
             const table = document.getElementById("dataTable");
             const thead = table.querySelector("thead tr");
@@ -68,18 +73,24 @@
             tbody.innerHTML = "";
             let rowNames = Array.from({ length: 20 }, (_, i) => (i * 10 + 1).toString());
 
-            // 設定表頭
-            Object.keys(tableData).forEach(letter => {
-                if (!thead.innerHTML.includes(`<th>${letter}</th>`)) {
+            // 指定固定順序
+            
+
+            // 清除表頭並按照固定順序建立
+            thead.innerHTML = "<th></th>";
+            orderedKeys.forEach(letter => {
+                if (tableData[letter] !== undefined) {
                     thead.innerHTML += `<th>${letter}</th>`;
                 }
             });
 
-            // 填入數據
+            // 填充數據
             rowNames.forEach((rowName, rowIndex) => {
                 let row = `<td>${rowName}</td>`;
-                Object.keys(tableData).forEach(letter => {
-                    row += `<td>${tableData[letter][rowIndex]}</td>`;
+                orderedKeys.forEach(letter => {
+                    if (tableData[letter] !== undefined) {
+                        row += `<td>${tableData[letter] ? tableData[letter][rowIndex] : 0}</td>`;
+                    }
                 });
                 tbody.innerHTML += `<tr>${row}</tr>`;
             });
@@ -104,6 +115,8 @@
         }
 
         async function reset(){
+            $("#pic").css("display","block");
+            document.getElementById("interact").classList.add('locked');
             if(subjectname=='Chinese'){
                 if(confirm("確定重製國語?")){            
                     var letters = new Array("7A","6A","5A","4A","3A","2A","A1","A2","B1","B2","C1","C2","D","E","F","G","H","I","J","K","L"); 
@@ -168,7 +181,8 @@
                     fetchData('English');
                 }
             }
-
+            document.getElementById("interact").classList.remove('locked');
+            $("#pic").css("display","none");
         }
         function back(){
             window.location.href = "index.html";
