@@ -1,8 +1,7 @@
-console.log("aaaa");
+
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
-console.log("aaaa");
 // Firebase 配置
 const firebaseConfig = {
     apiKey: "AIzaSyD-9F5fGAtNzz0QNLuiUjzbQmefwBpLydM",

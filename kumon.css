@@ -136,7 +136,7 @@
 }
 .notifications{
     position: fixed; /* 固定在視窗上，不會跟著滾動 */
-    top: 120%;
+    top: -20%;
     left: 50%;
     transform: translate(-50%, -50%); /* 讓圖片以自身中心點對齊 */
     z-index: 9999; /* 確保圖片顯示在最上層 */
@@ -166,4 +166,11 @@
 .locked {
     pointer-events: none;
     opacity: 0.5;
+}
+#file{
+    padding-top: 20px;
+    padding-bottom: 0px;
+    margin: 0px;
+    max-width: 50px;
+    height: auto;
 }

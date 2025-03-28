@@ -47,62 +47,23 @@
             <span id="spanid">數量</span><input type="text" id ="count"oninput="value=value.replace(/[^\d]/g,'')">
         <br>
         <div class="comfirm">
-            <button id="reset" >重製</button>
+            <img id="file"src="documentIcon.png" href="https://www.example.com">
             <button id="mathsave" >儲存</button>
             <button id="chisave" >儲存</button>
             <button id="engsave" >儲存</button>
         </div>
+        
     </div>
     
     </div>
+    
     <div id="container">
+        
 </div>
 
 </body>
 <img id="pic"src="loader.png">
 </html>
-<script type="module">
-            
-
-
-    async function setupFirestore() {
-        const letters = ["ZI","ZII","ZIII","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"];
-        for (const letter of letters) {
-            const letterRef = doc(db, "subjects", "English", "letters", letter);
-            let values = {};
-            for (let i = 1; i <= 20; i++) {
-                values[`value${i}`] = 0; // 預設值為 0
-            }
-            await setDoc(letterRef, values);
-        }
-        console.log("Firestore setup complete.");
-    }
-    window.getData = async function getData(){
-
-            const lettersSnapshot = await getDocs(collection(db, "subjects", document.getElementById("subject").value, "letters"));
-            for (const letterDoc of lettersSnapshot.docs) {
-                console.log(`  字母: ${letterDoc.id}`);
-            }
-    }
-    /*document.getElementById("updateBtn").addEventListener("click", async () => {
-        const subject = document.getElementById("subject").value;
-        const letter = document.getElementById("letter").value;
-        const value = document.getElementById("valueNumber").value;
-
-        if (!subject || !letter || !value) {
-            alert("請輸入完整的資料！");
-            return;
-        }
-
-        const letterRef = doc(db, "subjects", subject, "letters", letter);
-
-        await updateDoc(letterRef, {
-            value1: 20
-        });
-        alert(`已更新: ${subject} -> ${letter} -> value1 = ${value}`);
-    });*/
-
-</script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, getDocs,doc,setDoc,updateDoc,increment,getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -147,107 +108,21 @@
                 $("#container").append(notification);
                 setTimeout(function(){
                     $("#"+randomInt).css({
-                    "top":"80%",
+                    "top":"10%",
                     "opacity":"80%"
                 });
                 }, 10);
                 
                 setTimeout(function(){
                     $("#"+randomInt).css({
-                        "top":"120%", // 回到底部
+                        "top":"-20%", // 回到底部
                         "opacity": "0"      // 變透明
                     });
                     setTimeout(() => notification.remove(), 500);
                 }, 3000);
     }
-    document.getElementById("reset").addEventListener("click", async () => {
-        /*const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
-        const docSnap = await getDoc(docRef);
-        var front=docSnap.data().front;
-        var mes="";
-        for(var i=1;i<=5;i++){
-            var motion="motion"+front;
-            console.log(docSnap.data()[motion]);
-            mes+=(docSnap.data()[motion]+"\n");
-            front=(front+1)%5;
-        }
-        alert(mes);*/
-        $('#reset').attr("disabled","disabled");
-        $('#reset').css("background-color","gray");
-        if($("#chi").css("background-color")!="rgb(128, 128, 128)"){
-            if(confirm("確定重製國語?")){
-                document.getElementById("interact").classList.add('locked');
-                
-                $("#pic").css("display","block");
-                var letters = new Array("7A","6A","5A","4A","3A","2A","A1","A2","B1","B2","C1","C2","D","E","F","G","H","I","J","K","L"); 
-                for (const letter of letters) {
-                    const letterRef = doc(db, "subjects", "Chinese", "letters", letter);
-                    let values = {};
-                    for (let i = 1; i <= 20; i++) {
-                        values[`value${i}`] = 0; // 預設值為 0
-                    }
-                    await setDoc(letterRef, values);
-                }
-                const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
-                const docSnap=await getDoc(docRef);
-                const front=docSnap.data().front;
-                var motion="motion"+front;
-                const now = new Date();
-                const month = now.getMonth()+1;
-                await updateDoc(docRef,{[motion]:"Chinese Reset"+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
-                await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
-                messege("重置完成");
-                
-                $("#pic").css("display","none");
-                document.getElementById("interact").classList.remove('locked');
-            }
-        }
-        else if($("#math").css("background-color")!="rgb(128, 128, 128)"){
-            if(confirm("確定重製數學?")){
-                var letters = new Array("6A","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"); 
-                for (const letter of letters) {
-                    const letterRef = doc(db, "subjects", "Math", "letters", letter);
-                    let values = {};
-                    for (let i = 1; i <= 20; i++) {
-                        values[`value${i}`] = 0; // 預設值為 0
-                    }
-                    await setDoc(letterRef, values);
-                }
-                const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
-                const docSnap=await getDoc(docRef);
-                const front=docSnap.data().front;
-                var motion="motion"+front;
-                const now = new Date();
-                const month = now.getMonth()+1;
-                await updateDoc(docRef,{[motion]:"Math Reset"+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
-                await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
-                alert("完成");
-            }
-        }
-        else if($("#eng").css("background-color")!="rgb(128, 128, 128)"){
-            if(confirm("確定重製英文?")){
-                var letters = new Array("Z1","Z2","Z3","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"); 
-                for (const letter of letters) {
-                    const letterRef = doc(db, "subjects", "English", "letters", letter);
-                    let values = {};
-                    for (let i = 1; i <= 20; i++) {
-                        values[`value${i}`] = 0; // 預設值為 0
-                    }
-                    await setDoc(letterRef, values);
-                }
-                const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
-                const docSnap=await getDoc(docRef);
-                const front=docSnap.data().front;
-                var motion="motion"+front;
-                const now = new Date();
-                const month = now.getMonth()+1;
-                await updateDoc(docRef,{[motion]:"English Reset"+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
-                await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
-                alert("完成");
-            }
-        }
-        $('#reset').attr("disabled",false);
-        $('#reset').css("background-color","#7ecdf4");
+    document.getElementById("file").addEventListener("click", async () => {
+        window.location.href = "EXCEL.html";
     })
     document.getElementById("mathsave").addEventListener("click", async () => {
         var src=Number($("#src").val());
@@ -274,8 +149,8 @@
         }
         var value ="value"+(((src-1)/10)+1);
         if(confirm("請確認\n"+"數學"+"\n"+no+"教材\n"+src+"~"+dst+"\n"+count+"本")){
-            $('#mathsave').attr("disabled","disabled");
-            $('#mathsave').css("background-color","gray");
+            document.getElementById("interact").classList.add('locked');
+            $("#pic").css("display","block");
             try{
                 const promises = [];
                 const letterRef = doc(db, "subjects", "Math", "letters", no);
@@ -284,21 +159,12 @@
                     value ="value"+(((src-1)/10)+i+1);
                 }
                 await Promise.all(promises);
-                alert(`已更新`);
             }catch(error){
                 alert(error);
             }
-            const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
-            const docSnap=await getDoc(docRef);
-            const front=docSnap.data().front;
-            var motion="motion"+front;
-            const now = new Date();
-            const month = now.getMonth()+1;
-            await updateDoc(docRef,{[motion]:"數學"+no+"教材["+src+"~"+dst+"]x"+count+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
-            await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
-            $('#mathsave').text("儲存");
-            $('#mathsave').attr("disabled",false);
-            $('#mathsave').css("background-color","#7ecdf4");
+            $("#pic").css("display","none");
+            messege("儲存完成")
+            document.getElementById("interact").classList.remove('locked');
         }
     });
 
@@ -329,8 +195,6 @@
         if(confirm("請確認\n"+"國語"+"\n"+no+"教材\n"+src+"~"+dst+"\n"+count+"本")){
             document.getElementById("interact").classList.add('locked');
             $("#pic").css("display","block");
-            $('#chisave').attr("disabled","disabled");
-            $('#chisave').css("background-color","gray");
             try{
                 const promises = [];
                 const letterRef = doc(db, "subjects", "Chinese", "letters", no);
@@ -342,9 +206,6 @@
             }catch(error){
                 alert(error);
             }
-            $('#chisave').text("儲存");
-            $('#chisave').attr("disabled",false);
-            $('#chisave').css("background-color","#7ecdf4");
             $("#pic").css("display","none");
             messege("儲存完成")
             document.getElementById("interact").classList.remove('locked');
@@ -375,8 +236,8 @@
         }
         var value ="value"+(((src-1)/10)+1);
         if(confirm("請確認\n"+"英文"+"\n"+no+"教材\n"+src+"~"+dst+"\n"+count+"本")){
-            $('#engsave').attr("disabled","disabled");
-            $('#engsave').css("background-color","gray");
+            document.getElementById("interact").classList.add('locked');
+            $("#pic").css("display","block");
             try{
                 const promises = [];
                 const letterRef = doc(db, "subjects", "English", "letters", no);
@@ -385,13 +246,12 @@
                     value ="value"+(((src-1)/10)+i+1);
                 }
                 await Promise.all(promises);
-                alert(`已更新`);
             }catch(error){
                 alert(error);
             }
-            $('#engsave').text("儲存");
-            $('#engsave').attr("disabled",false);
-            $('#engsave').css("background-color","#7ecdf4");
+            $("#pic").css("display","none");
+            messege("儲存完成")
+            document.getElementById("interact").classList.remove('locked');
         }
     });
     

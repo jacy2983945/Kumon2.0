@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase 教材資料</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <h1>教材資料</h1>
+    <div id="container">
+        <button onclick="fetchData('Math')">讀取數學資料</button>
+        <button onclick="fetchData('Chinese')">讀取國文資料</button>
+        <button onclick="fetchData('English')">讀取英文資料</button>
+        <button onclick="exportToExcel()">下載 Excel</button>
+        <button onclick="reset()">重製</button>
+        <button onclick="back()">首頁</button>
+    </div>
+    
+
+    <table border="1" id="dataTable">
+
+    </table>
+
+    <script type="module">
+        var subjectname;
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs,doc,setDoc,updateDoc,increment,getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // 1. 初始化 Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-9F5fGAtNzz0QNLuiUjzbQmefwBpLydM",
+            authDomain: "statistics-921a1.firebaseapp.com",
+            projectId: "statistics-921a1",
+            storageBucket: "statistics-921a1.firebasestorage.app",
+            messagingSenderId: "1083533324715",
+            appId: "1:1083533324715:web:af5df87bd8e80f3c73e2ee",
+            measurementId: "G-YJS45V68TZ"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let tableData = {}; // 用於儲存 Firestore 數據
+
+        async function fetchData(subject) {
+            subjectname=subject;
+            const table = document.getElementById("dataTable");
+            table.innerHTML = "<thead><tr><th></th></tr></thead><tbody></tbody>";
+            
+            const snapshot = await getDocs(collection(db, "subjects", subject, "letters"));
+            
+            tableData = {}; // 清空數據
+            snapshot.forEach(doc => {
+                let values = [];
+                for (let i = 1; i <= 20; i++) {
+                    values.push(doc.data()[`value${i}`] || 0);
+                }
+                tableData[doc.id] = values;
+            });
+
+            renderTable();
+        }
+
+        function renderTable() {
+            const table = document.getElementById("dataTable");
+            const thead = table.querySelector("thead tr");
+            const tbody = table.querySelector("tbody");
+
+            tbody.innerHTML = "";
+            let rowNames = Array.from({ length: 20 }, (_, i) => (i * 10 + 1).toString());
+
+            // 設定表頭
+            Object.keys(tableData).forEach(letter => {
+                if (!thead.innerHTML.includes(`<th>${letter}</th>`)) {
+                    thead.innerHTML += `<th>${letter}</th>`;
+                }
+            });
+
+            // 填入數據
+            rowNames.forEach((rowName, rowIndex) => {
+                let row = `<td>${rowName}</td>`;
+                Object.keys(tableData).forEach(letter => {
+                    row += `<td>${tableData[letter][rowIndex]}</td>`;
+                });
+                tbody.innerHTML += `<tr>${row}</tr>`;
+            });
+        }
+
+        function exportToExcel() {
+            let wsData = [["Letter", ...Object.keys(tableData)]];
+            let rowNames = Array.from({ length: 20 }, (_, i) => (i * 10 + 1).toString());
+
+            rowNames.forEach((rowName, rowIndex) => {
+                let row = [rowName];
+                Object.keys(tableData).forEach(letter => {
+                    row.push(tableData[letter][rowIndex]);
+                });
+                wsData.push(row);
+            });
+
+            let ws = XLSX.utils.aoa_to_sheet(wsData);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "教材資料");
+            XLSX.writeFile(wb, subjectname+".xlsx");
+        }
+
+        async function reset(){
+            if(subjectname=='Chinese'){
+                if(confirm("確定重製國語?")){            
+                    var letters = new Array("7A","6A","5A","4A","3A","2A","A1","A2","B1","B2","C1","C2","D","E","F","G","H","I","J","K","L"); 
+                    for (const letter of letters) {
+                        const letterRef = doc(db, "subjects", "Chinese", "letters", letter);
+                        let values = {};
+                        for (let i = 1; i <= 20; i++) {
+                            values[`value${i}`] = 0; // 預設值為 0
+                        }
+                        await setDoc(letterRef, values);
+                    }
+                    const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
+                    const docSnap=await getDoc(docRef);
+                    const front=docSnap.data().front;
+                    var motion="motion"+front;
+                    const now = new Date();
+                    const month = now.getMonth()+1;
+                    await updateDoc(docRef,{[motion]:"Chinese Reset"+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
+                    await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
+                    fetchData('Chinese');
+                }
+            }else if(subjectname=='Math'){
+                if(confirm("確定重製數學?")){
+                    var letters = new Array("6A","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"); 
+                    for (const letter of letters) {
+                        const letterRef = doc(db, "subjects", "Math", "letters", letter);
+                        let values = {};
+                        for (let i = 1; i <= 20; i++) {
+                            values[`value${i}`] = 0; // 預設值為 0
+                        }
+                        await setDoc(letterRef, values);
+                    }
+                    const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
+                    const docSnap=await getDoc(docRef);
+                    const front=docSnap.data().front;
+                    var motion="motion"+front;
+                    const now = new Date();
+                    const month = now.getMonth()+1;
+                    await updateDoc(docRef,{[motion]:"Math Reset"+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
+                    await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
+                    fetchData('Math');
+                }
+            }else if(subjectname=='English'){
+                if(confirm("確定重製英文?")){
+                    var letters = new Array("Z1","Z2","Z3","5A","4A","3A","2A","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"); 
+                    for (const letter of letters) {
+                        const letterRef = doc(db, "subjects", "English", "letters", letter);
+                        let values = {};
+                        for (let i = 1; i <= 20; i++) {
+                            values[`value${i}`] = 0; // 預設值為 0
+                        }
+                        await setDoc(letterRef, values);
+                    }
+                    const docRef = doc(db, "motion", "vVAJIqCGGSwQlERd9io8");
+                    const docSnap=await getDoc(docRef);
+                    const front=docSnap.data().front;
+                    var motion="motion"+front;
+                    const now = new Date();
+                    const month = now.getMonth()+1;
+                    await updateDoc(docRef,{[motion]:"English Reset"+" ("+month+"/"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+")"});
+                    await updateDoc(docRef,{front:(docSnap.data().front+1)%5});
+                    fetchData('English');
+                }
+            }
+
+        }
+        function back(){
+            window.location.href = "index.html";
+        }
+        window.fetchData = fetchData;
+        window.exportToExcel = exportToExcel;
+        window.reset = reset;
+        window.back = back;
+    </script>
+</body>
+</html>
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%; /* 讓表格填滿可用空間 */
+        table-layout: fixed; /* 讓每一列的寬度固定 */
+    }
+    th, td {
+        border: 1px solid black;
+        text-align: center;
+        width: 5%;  /* 設定固定寬度 */
+        height: 5%px; /* 設定固定高度 */
+        max-height: 20px;
+        padding: 5px; /* 讓內容與邊界保持距離 */
+        font-size: xx-small;
+    }
+    th{
+        font-size: xx-small;
+    }
+    #container{
+        margin: 20px auto;
+    }
+</style>
